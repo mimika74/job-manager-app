@@ -12,20 +12,20 @@
 
 ## 作成・変更したファイル
 
-| ファイル | 内容 |
-| --- | --- |
-| `frontend/` 一式 | `npm create vite@latest frontend -- --template react-ts` で生成したベースプロジェクト(tsconfig一式、`vite.config.ts` 含む) |
-| [frontend/.env](../frontend/.env) / [frontend/.env.example](../frontend/.env.example) | APIのベースURL(`VITE_API_BASE_URL`)。`.env` はgitignore対象 |
-| [frontend/src/types/job.ts](../frontend/src/types/job.ts) | `Job` インターフェース、`JobStatus` 型(9段階のUnion型)、`JOB_STATUSES` 定数 |
-| [frontend/src/api/jobs.ts](../frontend/src/api/jobs.ts) | `fetchJobs(): Promise<Job[]>` — 型付きfetchラッパー |
-| [frontend/src/components/StatusBadge.tsx](../frontend/src/components/StatusBadge.tsx) | ステータス値に応じて色分けするバッジコンポーネント |
-| [frontend/src/pages/JobListPage.tsx](../frontend/src/pages/JobListPage.tsx) | 一覧画面。loading/error/空/成功の4状態を出し分けてテーブル表示 |
-| [frontend/src/App.tsx](../frontend/src/App.tsx) | ヘッダー(ブランドマーク+タイトル)+ `JobListPage` + フッターのレイアウト |
-| [frontend/src/index.css](../frontend/src/index.css) | デザイントークン(CSS変数)定義。配色・フォント・ドット柄の背景など |
-| [frontend/src/App.css](../frontend/src/App.css) | ヘッダー・カード・テーブル・バッジのスタイル |
-| [frontend/index.html](../frontend/index.html) | Google Fonts(Zen Kaku Gothic New / JetBrains Mono)の読み込み、タイトルを日本語化 |
-| `frontend/src/assets/*`, `frontend/public/icons.svg` | Viteテンプレートの未使用画像を削除 |
-| [.claude/launch.json](../.claude/launch.json) | プレビュー起動用設定(`npm --prefix frontend run dev` をポート5173で起動) |
+| ファイル                                                                              | 内容                                                                                                                       |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/` 一式                                                                      | `npm create vite@latest frontend -- --template react-ts` で生成したベースプロジェクト(tsconfig一式、`vite.config.ts` 含む) |
+| [frontend/.env](../frontend/.env) / [frontend/.env.example](../frontend/.env.example) | APIのベースURL(`VITE_API_BASE_URL`)。`.env` はgitignore対象                                                                |
+| [frontend/src/types/job.ts](../frontend/src/types/job.ts)                             | `Job` インターフェース、`JobStatus` 型(9段階のUnion型)、`JOB_STATUSES` 定数                                                |
+| [frontend/src/api/jobs.ts](../frontend/src/api/jobs.ts)                               | `fetchJobs(): Promise<Job[]>` — 型付きfetchラッパー                                                                        |
+| [frontend/src/components/StatusBadge.tsx](../frontend/src/components/StatusBadge.tsx) | ステータス値に応じて色分けするバッジコンポーネント                                                                         |
+| [frontend/src/pages/JobListPage.tsx](../frontend/src/pages/JobListPage.tsx)           | 一覧画面。loading/error/空/成功の4状態を出し分けてテーブル表示                                                             |
+| [frontend/src/App.tsx](../frontend/src/App.tsx)                                       | ヘッダー(ブランドマーク+タイトル)+ `JobListPage` + フッターのレイアウト                                                    |
+| [frontend/src/index.css](../frontend/src/index.css)                                   | デザイントークン(CSS変数)定義。配色・フォント・ドット柄の背景など                                                          |
+| [frontend/src/App.css](../frontend/src/App.css)                                       | ヘッダー・カード・テーブル・バッジのスタイル                                                                               |
+| [frontend/index.html](../frontend/index.html)                                         | Google Fonts(Zen Kaku Gothic New / JetBrains Mono)の読み込み、タイトルを日本語化                                           |
+| `frontend/src/assets/*`, `frontend/public/icons.svg`                                  | Viteテンプレートの未使用画像を削除                                                                                         |
+| [.claude/launch.json](../.claude/launch.json)                                         | プレビュー起動用設定(`npm --prefix frontend run dev` をポート5173で起動)                                                   |
 
 ---
 
@@ -66,14 +66,12 @@ export interface Job {
 
 ### 4. デザインをモックアップに合わせる
 
-添付されたセキュリティダッシュボードのHTML(単一ファイル、CSS変数でトークン定義)からデザイン言語を抽出し、`index.css` に移植:
+添付されたHTML(単一ファイル、CSS変数でトークン定義)からデザイン言語を抽出し、`index.css` に移植:
 
 - 配色: `--paper`(生成りの背景)、`--ink`(本文色)、`--gold`/`--loss`/`--profit`/`--info`/`--accent2`(状態別アクセントカラー)
 - タイポグラフィ: 見出し・本文は「Zen Kaku Gothic New」、数値・日付・給与などは等幅の「JetBrains Mono」(Google Fontsから読み込み)
 - カード: `border-radius:14px` + 淡いシャドウ、テーブルヘッダーは濃紺背景+生成り文字
 - バッジ: 元デザインの重要度バッジ(HIGH/MEDIUM/LOW)の配色パターンを、求人ステータス9段階にマッピングし直した(内定=緑、不採用=赤、選考中系=金、応募済=青、最終面接=紫、未応募/辞退=グレー)
-
-元のHTMLはセキュリティ監視ダッシュボード固有の機能(タブ切り替え、フィルタ、ページネーション等)を含んでいたが、それらは移植せず、デザイントークンとカード/テーブル/バッジのスタイルのみを踏襲した(Day3のスコープはあくまで一覧表示のため)。
 
 ---
 
