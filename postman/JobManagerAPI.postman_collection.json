@@ -1,0 +1,378 @@
+{
+	"info": {
+		"name": "求人管理API (Job Manager API)",
+		"description": "JobController CRUD + FormRequestバリデーションの動作確認用コレクション。\n\n実行順序: 「1. 正常系」を上から順に実行すると job_id が自動的に引き継がれます(Collection Runnerで一括実行推奨)。「2. バリデーションエラー」は単体で実行可能です。",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base_url", "value": "http://127.0.0.1:8000", "type": "string" },
+		{ "key": "job_id", "value": "", "type": "string" }
+	],
+	"item": [
+		{
+			"name": "1. 正常系 (Happy Path)",
+			"item": [
+				{
+					"name": "1-1 一覧取得 GET /api/jobs",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 200', () => pm.response.to.have.status(200));",
+									"pm.test('body is an array', () => Array.isArray(pm.response.json()));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-2 新規登録 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"company_name\": \"株式会社サンプル\",\n  \"position\": \"バックエンドエンジニア\",\n  \"status\": \"未応募\",\n  \"application_date\": \"2026-08-20\",\n  \"url\": \"https://example.com/jobs/1\",\n  \"location\": \"東京都\",\n  \"salary_min\": 500,\n  \"salary_max\": 650,\n  \"memo\": \"カジュアル面談経由\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 201', () => pm.response.to.have.status(201));",
+									"const json = pm.response.json();",
+									"pm.test('id is returned', () => pm.expect(json.id).to.be.a('number'));",
+									"pm.test('fields echoed back correctly', () => {",
+									"  pm.expect(json.company_name).to.eql('株式会社サンプル');",
+									"  pm.expect(json.status).to.eql('未応募');",
+									"  pm.expect(json.salary_min).to.eql(500);",
+									"  pm.expect(json.salary_max).to.eql(650);",
+									"});",
+									"pm.collectionVariables.set('job_id', json.id);"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-3 詳細取得 GET /api/jobs/{{job_id}}",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 200', () => pm.response.to.have.status(200));",
+									"pm.test('id matches requested job', () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('job_id'))));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-4 ステータス更新 PATCH /api/jobs/{{job_id}}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"status\": \"書類選考中\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 200', () => pm.response.to.have.status(200));",
+									"pm.test('status field updated', () => pm.expect(pm.response.json().status).to.eql('書類選考中'));",
+									"pm.test('other fields untouched', () => pm.expect(pm.response.json().company_name).to.eql('株式会社サンプル'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-5 給与上限のみ部分更新(既存下限との交差検証) PATCH /api/jobs/{{job_id}}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"salary_max\": 700\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 200 (700 >= existing salary_min 500)', () => pm.response.to.have.status(200));",
+									"pm.test('salary_max updated, salary_min preserved', () => {",
+									"  const json = pm.response.json();",
+									"  pm.expect(json.salary_max).to.eql(700);",
+									"  pm.expect(json.salary_min).to.eql(500);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-6 削除 DELETE /api/jobs/{{job_id}}",
+					"request": {
+						"method": "DELETE",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 204', () => pm.response.to.have.status(204));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "1-7 削除後の確認 GET /api/jobs/{{job_id}} (404想定)",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 404 after delete', () => pm.response.to.have.status(404));"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "2. バリデーションエラー (Validation Errors)",
+			"item": [
+				{
+					"name": "2-1 必須項目欠落 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"memo\": \"会社名も職種もステータスも無し\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 422', () => pm.response.to.have.status(422));",
+									"const errors = pm.response.json().errors;",
+									"pm.test('company_name is required', () => pm.expect(errors).to.have.property('company_name'));",
+									"pm.test('position is required', () => pm.expect(errors).to.have.property('position'));",
+									"pm.test('status is required', () => pm.expect(errors).to.have.property('status'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-2 不正なstatus値 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"company_name\": \"テスト株式会社\",\n  \"position\": \"エンジニア\",\n  \"status\": \"検討中\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 422', () => pm.response.to.have.status(422));",
+									"pm.test('status error present (9段階の選択肢以外は拒否)', () => pm.expect(pm.response.json().errors).to.have.property('status'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-3 不正なURL形式 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"company_name\": \"テスト株式会社\",\n  \"position\": \"エンジニア\",\n  \"status\": \"未応募\",\n  \"url\": \"not-a-valid-url\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 422', () => pm.response.to.have.status(422));",
+									"pm.test('url error present', () => pm.expect(pm.response.json().errors).to.have.property('url'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-4 不正な日付形式 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"company_name\": \"テスト株式会社\",\n  \"position\": \"エンジニア\",\n  \"status\": \"未応募\",\n  \"application_date\": \"2026年8月20日\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 422', () => pm.response.to.have.status(422));",
+									"pm.test('application_date error present', () => pm.expect(pm.response.json().errors).to.have.property('application_date'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-5 給与上限が下限未満 POST /api/jobs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"company_name\": \"テスト株式会社\",\n  \"position\": \"エンジニア\",\n  \"status\": \"未応募\",\n  \"salary_min\": 600,\n  \"salary_max\": 400\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs", "host": [ "{{base_url}}" ], "path": [ "api", "jobs" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 422', () => pm.response.to.have.status(422));",
+									"pm.test('salary_max error present', () => pm.expect(pm.response.json().errors).to.have.property('salary_max'));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-6 存在しないID取得 GET /api/jobs/999999",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Accept", "value": "application/json" } ],
+						"url": { "raw": "{{base_url}}/api/jobs/999999", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "999999" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 404', () => pm.response.to.have.status(404));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-7 存在しないID更新 PATCH /api/jobs/999999",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"status\": \"内定\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs/999999", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "999999" ] }
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 404', () => pm.response.to.have.status(404));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "2-8 更新時の不正status PATCH /api/jobs/{{job_id}}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"body": { "mode": "raw", "raw": "{\n  \"status\": \"保留\"\n}" },
+						"url": { "raw": "{{base_url}}/api/jobs/{{job_id}}", "host": [ "{{base_url}}" ], "path": [ "api", "jobs", "{{job_id}}" ] },
+						"description": "先に「1. 正常系」を実行して job_id を作成しておくか、既存のIDを直接指定してください。"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('status is 404 or 422', () => pm.expect([404, 422]).to.include(pm.response.code));"
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
