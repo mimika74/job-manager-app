@@ -2,7 +2,7 @@
 
 ## 目的
 
-`frontend/` にReact(Vite + TypeScript)プロジェクトを構築し、Day2で作ったLaravel API(`GET /api/jobs`)に対して実際にブラウザからfetchし、求人一覧をテーブル表示する。あわせて、別途用意したデザインモックアップ(セキュリティ監視ダッシュボード)のデザイントークン(配色・タイポグラフィ・カード/バッジのスタイル)を踏襲した見た目に整えた。
+`frontend/` にReact(Vite + TypeScript)プロジェクトを構築し、Day2で作ったLaravel API(`GET /api/jobs`)に対して実際にブラウザからfetchし、求人一覧をテーブル表示する。あわせて、別途用意したデザインモックアップのデザイントークン(配色・タイポグラフィ・カード/バッジのスタイル)を踏襲した見た目に整えた。
 
 対象要件: [requirements.md](requirements.md) の「画面一覧」のうち、求人一覧画面の最初のステップ(一覧表示のみ、新規登録・編集画面は次段階)。
 
@@ -12,20 +12,20 @@
 
 ## 作成・変更したファイル
 
-| ファイル                                                                              | 内容                                                                                                                       |
-| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `frontend/` 一式                                                                      | `npm create vite@latest frontend -- --template react-ts` で生成したベースプロジェクト(tsconfig一式、`vite.config.ts` 含む) |
-| [frontend/.env](../frontend/.env) / [frontend/.env.example](../frontend/.env.example) | APIのベースURL(`VITE_API_BASE_URL`)。`.env` はgitignore対象                                                                |
-| [frontend/src/types/job.ts](../frontend/src/types/job.ts)                             | `Job` インターフェース、`JobStatus` 型(9段階のUnion型)、`JOB_STATUSES` 定数                                                |
-| [frontend/src/api/jobs.ts](../frontend/src/api/jobs.ts)                               | `fetchJobs(): Promise<Job[]>` — 型付きfetchラッパー                                                                        |
-| [frontend/src/components/StatusBadge.tsx](../frontend/src/components/StatusBadge.tsx) | ステータス値に応じて色分けするバッジコンポーネント                                                                         |
-| [frontend/src/pages/JobListPage.tsx](../frontend/src/pages/JobListPage.tsx)           | 一覧画面。loading/error/空/成功の4状態を出し分けてテーブル表示                                                             |
-| [frontend/src/App.tsx](../frontend/src/App.tsx)                                       | ヘッダー(ブランドマーク+タイトル)+ `JobListPage` + フッターのレイアウト                                                    |
-| [frontend/src/index.css](../frontend/src/index.css)                                   | デザイントークン(CSS変数)定義。配色・フォント・ドット柄の背景など                                                          |
-| [frontend/src/App.css](../frontend/src/App.css)                                       | ヘッダー・カード・テーブル・バッジのスタイル                                                                               |
-| [frontend/index.html](../frontend/index.html)                                         | Google Fonts(Zen Kaku Gothic New / JetBrains Mono)の読み込み、タイトルを日本語化                                           |
-| `frontend/src/assets/*`, `frontend/public/icons.svg`                                  | Viteテンプレートの未使用画像を削除                                                                                         |
-| [.claude/launch.json](../.claude/launch.json)                                         | プレビュー起動用設定(`npm --prefix frontend run dev` をポート5173で起動)                                                   |
+| ファイル | 内容 |
+| --- | --- |
+| `frontend/` 一式 | `npm create vite@latest frontend -- --template react-ts` で生成したベースプロジェクト(tsconfig一式、`vite.config.ts` 含む) |
+| [frontend/.env](../frontend/.env) / [frontend/.env.example](../frontend/.env.example) | APIのベースURL(`VITE_API_BASE_URL`)。`.env` はgitignore対象 |
+| [frontend/src/types/job.ts](../frontend/src/types/job.ts) | `Job` インターフェース、`JobStatus` 型(9段階のUnion型)、`JOB_STATUSES` 定数 |
+| [frontend/src/api/jobs.ts](../frontend/src/api/jobs.ts) | `fetchJobs(): Promise<Job[]>` — 型付きfetchラッパー |
+| [frontend/src/components/StatusBadge.tsx](../frontend/src/components/StatusBadge.tsx) | ステータス値に応じて色分けするバッジコンポーネント |
+| [frontend/src/pages/JobListPage.tsx](../frontend/src/pages/JobListPage.tsx) | 一覧画面。loading/error/空/成功の4状態を出し分けてテーブル表示 |
+| [frontend/src/App.tsx](../frontend/src/App.tsx) | ヘッダー(ブランドマーク+タイトル)+ `JobListPage` + フッターのレイアウト |
+| [frontend/src/index.css](../frontend/src/index.css) | デザイントークン(CSS変数)定義。配色・フォント・ドット柄の背景など |
+| [frontend/src/App.css](../frontend/src/App.css) | ヘッダー・カード・テーブル・バッジのスタイル |
+| [frontend/index.html](../frontend/index.html) | Google Fonts(Zen Kaku Gothic New / JetBrains Mono)の読み込み、タイトルを日本語化 |
+| `frontend/src/assets/*`, `frontend/public/icons.svg` | Viteテンプレートの未使用画像を削除 |
+| [.claude/launch.json](../.claude/launch.json) | プレビュー起動用設定(`npm --prefix frontend run dev` をポート5173で起動) |
 
 ---
 
