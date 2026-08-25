@@ -39,7 +39,7 @@ class UpdateJobRequest extends FormRequest
             $salaryMax = $this->input('salary_max', $job->salary_max);
 
             if (! is_null($salaryMin) && ! is_null($salaryMax) && $salaryMax < $salaryMin) {
-                $validator->errors()->add('salary_max', 'The salary max field must be greater than or equal to salary min.');
+                $validator->errors()->add('salary_max', '年収レンジ(上限)は年収レンジ(下限)以上の値にしてください。');
             }
         });
     }

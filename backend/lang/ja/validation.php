@@ -1,0 +1,195 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation Language Lines
+    |--------------------------------------------------------------------------
+    */
+
+    'accepted' => ':attributeを承認してください。',
+    'accepted_if' => ':otherが:valueの場合、:attributeを承認してください。',
+    'active_url' => ':attributeは有効なURLではありません。',
+    'after' => ':attributeには:dateより後の日付を指定してください。',
+    'after_or_equal' => ':attributeには:date以降の日付を指定してください。',
+    'alpha' => ':attributeはアルファベットのみ使用できます。',
+    'alpha_dash' => ':attributeはアルファベット、数字、ダッシュ、アンダースコアのみ使用できます。',
+    'alpha_num' => ':attributeはアルファベットと数字のみ使用できます。',
+    'any_of' => ':attributeは無効です。',
+    'array' => ':attributeは配列である必要があります。',
+    'array_keys' => ':attributeには次のキーのみ含めてください: :values。',
+    'ascii' => ':attributeは半角の英数記号のみ使用できます。',
+    'base64' => ':attributeは有効なBase64文字列である必要があります。',
+    'before' => ':attributeには:dateより前の日付を指定してください。',
+    'before_or_equal' => ':attributeには:date以前の日付を指定してください。',
+    'between' => [
+        'array' => ':attributeは:min個から:max個までの範囲で指定してください。',
+        'file' => ':attributeは:min KBから:max KBまでのファイルにしてください。',
+        'numeric' => ':attributeは:minから:maxまでの値にしてください。',
+        'string' => ':attributeは:min文字から:max文字までの範囲で入力してください。',
+    ],
+    'boolean' => ':attributeはtrueかfalseにしてください。',
+    'can' => ':attributeに許可されていない値が含まれています。',
+    'confirmed' => ':attributeの確認が一致しません。',
+    'contains' => ':attributeに必要な値が含まれていません。',
+    'current_password' => 'パスワードが正しくありません。',
+    'date' => ':attributeには有効な日付を指定してください。',
+    'date_equals' => ':attributeには:dateと同じ日付を指定してください。',
+    'date_format' => ':attributeは:formatの形式に一致しません。',
+    'decimal' => ':attributeは小数点以下:decimal桁で入力してください。',
+    'declined' => ':attributeを拒否してください。',
+    'declined_if' => ':otherが:valueの場合、:attributeを拒否してください。',
+    'different' => ':attributeと:otherには異なる値を指定してください。',
+    'digits' => ':attributeは:digits桁で入力してください。',
+    'digits_between' => ':attributeは:min桁から:max桁までの範囲で入力してください。',
+    'dimensions' => ':attributeの画像サイズが無効です。',
+    'distinct' => ':attributeに重複した値があります。',
+    'doesnt_contain' => ':attributeには次のいずれも含めないでください: :values。',
+    'doesnt_end_with' => ':attributeは次のいずれかで終わってはいけません: :values。',
+    'doesnt_start_with' => ':attributeは次のいずれかで始まってはいけません: :values。',
+    'email' => ':attributeには有効なメールアドレスを指定してください。',
+    'encoding' => ':attributeは:encodingでエンコードしてください。',
+    'ends_with' => ':attributeには次のいずれかで終わる値を指定してください: :values。',
+    'enum' => '選択された:attributeは無効です。',
+    'exists' => '選択された:attributeは無効です。',
+    'extensions' => ':attributeには次のいずれかの拡張子を指定してください: :values。',
+    'file' => ':attributeにはファイルを指定してください。',
+    'filled' => ':attributeに値を入力してください。',
+    'gt' => [
+        'array' => ':attributeは:value個より多く指定してください。',
+        'file' => ':attributeは:value KBより大きいファイルにしてください。',
+        'numeric' => ':attributeは:valueより大きい値にしてください。',
+        'string' => ':attributeは:value文字より長く入力してください。',
+    ],
+    'gte' => [
+        'array' => ':attributeは:value個以上指定してください。',
+        'file' => ':attributeは:value KB以上のファイルにしてください。',
+        'numeric' => ':attributeは:value以上の値にしてください。',
+        'string' => ':attributeは:value文字以上で入力してください。',
+    ],
+    'hex_color' => ':attributeには有効な16進数カラーコードを指定してください。',
+    'image' => ':attributeには画像ファイルを指定してください。',
+    'in' => '選択された:attributeは無効です。',
+    'in_array' => ':attributeは:otherに存在しません。',
+    'in_array_keys' => ':attributeには次のキーのうち少なくとも1つを含めてください: :values。',
+    'integer' => ':attributeは整数で入力してください。',
+    'ip' => ':attributeには有効なIPアドレスを指定してください。',
+    'ipv4' => ':attributeには有効なIPv4アドレスを指定してください。',
+    'ipv6' => ':attributeには有効なIPv6アドレスを指定してください。',
+    'json' => ':attributeには有効なJSON文字列を指定してください。',
+    'list' => ':attributeはリスト形式である必要があります。',
+    'lowercase' => ':attributeは小文字で入力してください。',
+    'lt' => [
+        'array' => ':attributeは:value個未満で指定してください。',
+        'file' => ':attributeは:value KB未満のファイルにしてください。',
+        'numeric' => ':attributeは:value未満の値にしてください。',
+        'string' => ':attributeは:value文字未満で入力してください。',
+    ],
+    'lte' => [
+        'array' => ':attributeは:value個以下で指定してください。',
+        'file' => ':attributeは:value KB以下のファイルにしてください。',
+        'numeric' => ':attributeは:value以下の値にしてください。',
+        'string' => ':attributeは:value文字以下で入力してください。',
+    ],
+    'mac_address' => ':attributeには有効なMACアドレスを指定してください。',
+    'max' => [
+        'array' => ':attributeは:max個以下で指定してください。',
+        'file' => ':attributeは:max KB以下のファイルにしてください。',
+        'numeric' => ':attributeは:max以下の値にしてください。',
+        'string' => ':attributeは:max文字以下で入力してください。',
+    ],
+    'max_digits' => ':attributeは:max桁以下で入力してください。',
+    'mimes' => ':attributeには次のいずれかの形式のファイルを指定してください: :values。',
+    'mimetypes' => ':attributeには次のいずれかの形式のファイルを指定してください: :values。',
+    'min' => [
+        'array' => ':attributeは:min個以上指定してください。',
+        'file' => ':attributeは:min KB以上のファイルにしてください。',
+        'numeric' => ':attributeは:min以上の値にしてください。',
+        'string' => ':attributeは:min文字以上で入力してください。',
+    ],
+    'min_digits' => ':attributeは:min桁以上で入力してください。',
+    'missing' => ':attributeは存在しない状態にしてください。',
+    'missing_if' => ':otherが:valueの場合、:attributeは存在しない状態にしてください。',
+    'missing_unless' => ':otherが:valueでない限り、:attributeは存在しない状態にしてください。',
+    'missing_with' => ':valuesが存在する場合、:attributeは存在しない状態にしてください。',
+    'missing_with_all' => ':valuesが全て存在する場合、:attributeは存在しない状態にしてください。',
+    'multiple_of' => ':attributeは:valueの倍数で指定してください。',
+    'not_in' => '選択された:attributeは無効です。',
+    'not_regex' => ':attributeの形式が無効です。',
+    'numeric' => ':attributeは数値で入力してください。',
+    'password' => [
+        'letters' => ':attributeには少なくとも1文字のアルファベットを含めてください。',
+        'mixed' => ':attributeには少なくとも1つの大文字と1つの小文字を含めてください。',
+        'numbers' => ':attributeには少なくとも1つの数字を含めてください。',
+        'symbols' => ':attributeには少なくとも1つの記号を含めてください。',
+        'uncompromised' => '入力された:attributeは漏洩データに含まれています。別の:attributeを指定してください。',
+    ],
+    'present' => ':attributeが存在している必要があります。',
+    'present_if' => ':otherが:valueの場合、:attributeが存在している必要があります。',
+    'present_unless' => ':otherが:valueでない限り、:attributeが存在している必要があります。',
+    'present_with' => ':valuesが存在する場合、:attributeが存在している必要があります。',
+    'present_with_all' => ':valuesが全て存在する場合、:attributeが存在している必要があります。',
+    'prohibited' => ':attributeは許可されていません。',
+    'prohibited_if' => ':otherが:valueの場合、:attributeは許可されていません。',
+    'prohibited_if_accepted' => ':otherが承認された場合、:attributeは許可されていません。',
+    'prohibited_if_declined' => ':otherが拒否された場合、:attributeは許可されていません。',
+    'prohibited_unless' => ':otherが:valuesに含まれていない限り、:attributeは許可されていません。',
+    'prohibits' => ':attributeが存在する場合、:otherは存在できません。',
+    'regex' => ':attributeの形式が無効です。',
+    'required' => ':attributeを入力してください。',
+    'required_array_keys' => ':attributeには次のキーを含めてください: :values。',
+    'required_if' => ':otherが:valueの場合、:attributeを入力してください。',
+    'required_if_accepted' => ':otherが承認された場合、:attributeを入力してください。',
+    'required_if_declined' => ':otherが拒否された場合、:attributeを入力してください。',
+    'required_unless' => ':otherが:valuesに含まれていない限り、:attributeを入力してください。',
+    'required_with' => ':valuesが入力されている場合、:attributeを入力してください。',
+    'required_with_all' => ':valuesが全て入力されている場合、:attributeを入力してください。',
+    'required_without' => ':valuesが入力されていない場合、:attributeを入力してください。',
+    'required_without_all' => ':valuesがいずれも入力されていない場合、:attributeを入力してください。',
+    'same' => ':attributeと:otherには同じ値を指定してください。',
+    'size' => [
+        'array' => ':attributeは:size個指定してください。',
+        'file' => ':attributeは:size KBにしてください。',
+        'numeric' => ':attributeは:sizeにしてください。',
+        'string' => ':attributeは:size文字にしてください。',
+    ],
+    'starts_with' => ':attributeには次のいずれかで始まる値を指定してください: :values。',
+    'string' => ':attributeは文字列で入力してください。',
+    'timezone' => ':attributeには有効なタイムゾーンを指定してください。',
+    'unique' => ':attributeはすでに使用されています。',
+    'uploaded' => ':attributeのアップロードに失敗しました。',
+    'uppercase' => ':attributeは大文字で入力してください。',
+    'url' => ':attributeには有効なURLの形式で入力してください。',
+    'ulid' => ':attributeには有効なULIDを指定してください。',
+    'uuid' => ':attributeには有効なUUIDを指定してください。',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Language Lines
+    |--------------------------------------------------------------------------
+    */
+
+    'custom' => [
+        //
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Attributes
+    |--------------------------------------------------------------------------
+    */
+
+    'attributes' => [
+        'company_name' => '会社名',
+        'position' => '職種/ポジション名',
+        'status' => 'ステータス',
+        'application_date' => '応募日',
+        'url' => '求人URL',
+        'location' => '勤務地',
+        'salary_min' => '年収レンジ(下限)',
+        'salary_max' => '年収レンジ(上限)',
+        'memo' => 'メモ',
+    ],
+
+];
