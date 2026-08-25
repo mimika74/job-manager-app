@@ -20,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<JobListPage />} />
           <Route path="/jobs/new" element={<JobFormPage />} />
+          <Route path="/jobs/:id/edit" element={<JobFormPage />} />
         </Routes>
       </main>
 

@@ -75,6 +75,7 @@ export default function JobListPage() {
                 <th>応募日</th>
                 <th>勤務地</th>
                 <th>給与</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -88,6 +89,11 @@ export default function JobListPage() {
                   <td className="mono">{job.application_date ?? '-'}</td>
                   <td>{job.location ?? '-'}</td>
                   <td className="mono">{formatSalary(job)}</td>
+                  <td>
+                    <Link to={`/jobs/${job.id}/edit`} className="link-edit">
+                      編集
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

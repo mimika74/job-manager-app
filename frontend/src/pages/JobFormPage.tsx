@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ApiValidationError, createJob } from '../api/jobs'
-import { JOB_STATUSES, type JobStatus } from '../types/job'
+import { useEffect, useState, type FormEvent } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ApiValidationError, createJob, fetchJob, updateJob } from '../api/jobs'
+import { JOB_STATUSES, type Job, type JobStatus } from '../types/job'
 
 interface FormState {
   company_name: string
@@ -27,6 +27,20 @@ const initialState: FormState = {
   memo: '',
 }
 
+function toFormState(job: Job): FormState {
+  return {
+    company_name: job.company_name,
+    position: job.position,
+    status: job.status,
+    application_date: job.application_date ?? '',
+    url: job.url ?? '',
+    location: job.location ?? '',
+    salary_min: job.salary_min == null ? '' : String(job.salary_min),
+    salary_max: job.salary_max == null ? '' : String(job.salary_max),
+    memo: job.memo ?? '',
+  }
+}
+
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages || messages.length === 0) return null
   return <p className="field-error">{messages[0]}</p>
@@ -34,10 +48,38 @@ function FieldError({ messages }: { messages?: string[] }) {
 
 export default function JobFormPage() {
   const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const isEditMode = id !== undefined
+  const jobId = isEditMode ? Number(id) : null
+
   const [form, setForm] = useState<FormState>(initialState)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(isEditMode)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (jobId === null) return
+    let cancelled = false
+
+    setLoading(true)
+    fetchJob(jobId)
+      .then((job) => {
+        if (cancelled) return
+        setForm(toFormState(job))
+        setLoading(false)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        setLoadError(err instanceof Error ? err.message : String(err))
+        setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [jobId])
 
   function handleChange<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -49,18 +91,24 @@ export default function JobFormPage() {
     setErrors({})
     setSubmitError(null)
 
+    const payload = {
+      company_name: form.company_name,
+      position: form.position,
+      status: form.status,
+      application_date: form.application_date || null,
+      url: form.url || null,
+      location: form.location || null,
+      salary_min: form.salary_min === '' ? null : Number(form.salary_min),
+      salary_max: form.salary_max === '' ? null : Number(form.salary_max),
+      memo: form.memo || null,
+    }
+
     try {
-      await createJob({
-        company_name: form.company_name,
-        position: form.position,
-        status: form.status,
-        application_date: form.application_date || null,
-        url: form.url || null,
-        location: form.location || null,
-        salary_min: form.salary_min === '' ? null : Number(form.salary_min),
-        salary_max: form.salary_max === '' ? null : Number(form.salary_max),
-        memo: form.memo || null,
-      })
+      if (jobId !== null) {
+        await updateJob(jobId, payload)
+      } else {
+        await createJob(payload)
+      }
       navigate('/')
     } catch (err) {
       if (err instanceof ApiValidationError) {
@@ -73,9 +121,27 @@ export default function JobFormPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="card empty-state">
+        <p>読み込み中...</p>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="card empty-state">
+        <div className="icon">⚠️</div>
+        <h3>求人データの取得に失敗しました</h3>
+        <p role="alert">{loadError}</p>
+      </div>
+    )
+  }
+
   return (
     <form className="card job-form" onSubmit={handleSubmit} noValidate>
-      <h2>求人を新規登録</h2>
+      <h2>{isEditMode ? '求人を編集' : '求人を新規登録'}</h2>
       {submitError && (
         <p className="form-error" role="alert">
           {submitError}
@@ -192,7 +258,7 @@ export default function JobFormPage() {
 
       <div className="form-actions">
         <button type="submit" className="btn-primary" disabled={submitting}>
-          {submitting ? '登録中...' : '登録する'}
+          {submitting ? '保存中...' : isEditMode ? '更新する' : '登録する'}
         </button>
         <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
           キャンセル

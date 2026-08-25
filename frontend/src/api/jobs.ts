@@ -44,3 +44,20 @@ export function createJob(input: CreateJobInput): Promise<Job> {
     body: JSON.stringify(input),
   }).then((response) => handleResponse<Job>(response))
 }
+
+export function fetchJob(id: number): Promise<Job> {
+  return fetch(`${API_BASE_URL}/jobs/${id}`, {
+    headers: { Accept: 'application/json' },
+  }).then((response) => handleResponse<Job>(response))
+}
+
+export function updateJob(id: number, input: CreateJobInput): Promise<Job> {
+  return fetch(`${API_BASE_URL}/jobs/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(input),
+  }).then((response) => handleResponse<Job>(response))
+}

@@ -227,6 +227,17 @@ tbody tr.job-row:last-child td {
   border-color: var(--ink);
 }
 
+.link-edit {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--info);
+  text-decoration: none;
+}
+
+.link-edit:hover {
+  text-decoration: underline;
+}
+
 /* フォーム */
 .job-form h2 {
   font-size: 17px;
