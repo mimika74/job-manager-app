@@ -104,6 +104,34 @@ tbody tr.job-row:last-child td {
   border-bottom: none;
 }
 
+tr.job-row td:first-child {
+  border-left: 3px solid transparent;
+}
+
+tr.job-row.tone-loss td:first-child {
+  border-left-color: var(--loss);
+}
+
+tr.job-row.tone-gold td:first-child {
+  border-left-color: var(--gold);
+}
+
+tr.job-row.tone-info td:first-child {
+  border-left-color: var(--info);
+}
+
+tr.job-row.tone-profit td:first-child {
+  border-left-color: var(--profit);
+}
+
+tr.job-row.tone-accent2 td:first-child {
+  border-left-color: var(--accent2);
+}
+
+tr.job-row.tone-neutral td:first-child {
+  border-left-color: var(--line);
+}
+
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -163,6 +191,10 @@ tbody tr.job-row:last-child td {
 .empty-state p {
   font-size: 13px;
   line-height: 1.7;
+}
+
+.empty-state .btn-secondary {
+  margin-top: 16px;
 }
 
 .appfoot {
@@ -225,6 +257,22 @@ tbody tr.job-row:last-child td {
 
 .btn-secondary:hover {
   border-color: var(--ink);
+}
+
+.btn-danger {
+  background: var(--white);
+  color: var(--loss);
+  border-color: var(--loss-bg);
+}
+
+.btn-danger:hover {
+  background: var(--loss-bg);
+  border-color: var(--loss);
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .link-edit {
@@ -314,6 +362,26 @@ tbody tr.job-row:last-child td {
   display: flex;
   gap: 10px;
   margin-top: 8px;
+}
+
+.delete-confirm {
+  background: var(--loss-bg);
+  border: 1px solid #e9c2b6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+.delete-confirm p {
+  font-size: 13px;
+  color: var(--loss);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 10px;
 }
 
 @media (max-width: 640px) {

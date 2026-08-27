@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchJobs } from '../api/jobs'
 import type { Job } from '../types/job'
 import StatusBadge from '../components/StatusBadge'
+import { getStatusTone } from '../lib/statusTone'
 
 type LoadState = 'loading' | 'success' | 'error'
 
@@ -19,25 +20,24 @@ export default function JobListPage() {
   const [state, setState] = useState<LoadState>('loading')
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let cancelled = false
+  const load = useCallback(() => {
+    setState('loading')
+    setError(null)
 
     fetchJobs()
       .then((data) => {
-        if (cancelled) return
         setJobs(data)
         setState('success')
       })
       .catch((err: unknown) => {
-        if (cancelled) return
         setError(err instanceof Error ? err.message : String(err))
         setState('error')
       })
-
-    return () => {
-      cancelled = true
-    }
   }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
 
   let content
   if (state === 'loading') {
@@ -52,6 +52,9 @@ export default function JobListPage() {
         <div className="icon">⚠️</div>
         <h3>求人データの取得に失敗しました</h3>
         <p role="alert">{error}</p>
+        <button type="button" className="btn-secondary" onClick={load}>
+          再読み込み
+        </button>
       </div>
     )
   } else if (jobs.length === 0) {
@@ -80,7 +83,7 @@ export default function JobListPage() {
             </thead>
             <tbody>
               {jobs.map((job) => (
-                <tr key={job.id} className="job-row">
+                <tr key={job.id} className={`job-row tone-${getStatusTone(job.status)}`}>
                   <td>{job.company_name}</td>
                   <td>{job.position}</td>
                   <td>
