@@ -23,41 +23,64 @@ async function handleResponse<T>(response: Response): Promise<T> {
     if (response.status === 422 && body?.errors) {
       throw new ApiValidationError(body.message ?? 'Validation failed', body.errors)
     }
+    if (response.status === 404) {
+      throw new Error('指定された求人が見つかりませんでした。')
+    }
     throw new Error(body?.message ?? `Request failed with status ${response.status}`)
+  }
+  if (response.status === 204) {
+    return undefined as T
   }
   return response.json() as Promise<T>
 }
 
+async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, init)
+  } catch {
+    throw new Error('サーバーに接続できませんでした。通信環境を確認するか、しばらくしてから再度お試しください。')
+  }
+  return handleResponse<T>(response)
+}
+
 export function fetchJobs(): Promise<Job[]> {
-  return fetch(`${API_BASE_URL}/jobs`, {
+  return apiRequest<Job[]>('/jobs', {
     headers: { Accept: 'application/json' },
-  }).then((response) => handleResponse<Job[]>(response))
+  })
+}
+
+export function fetchJob(id: number): Promise<Job> {
+  return apiRequest<Job>(`/jobs/${id}`, {
+    headers: { Accept: 'application/json' },
+  })
 }
 
 export function createJob(input: CreateJobInput): Promise<Job> {
-  return fetch(`${API_BASE_URL}/jobs`, {
+  return apiRequest<Job>('/jobs', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     body: JSON.stringify(input),
-  }).then((response) => handleResponse<Job>(response))
-}
-
-export function fetchJob(id: number): Promise<Job> {
-  return fetch(`${API_BASE_URL}/jobs/${id}`, {
-    headers: { Accept: 'application/json' },
-  }).then((response) => handleResponse<Job>(response))
+  })
 }
 
 export function updateJob(id: number, input: CreateJobInput): Promise<Job> {
-  return fetch(`${API_BASE_URL}/jobs/${id}`, {
+  return apiRequest<Job>(`/jobs/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     body: JSON.stringify(input),
-  }).then((response) => handleResponse<Job>(response))
+  })
+}
+
+export function deleteJob(id: number): Promise<void> {
+  return apiRequest<void>(`/jobs/${id}`, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+  })
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ApiValidationError, createJob, fetchJob, updateJob } from '../api/jobs'
+import { ApiValidationError, createJob, deleteJob, fetchJob, updateJob } from '../api/jobs'
 import { JOB_STATUSES, type Job, type JobStatus } from '../types/job'
 
 interface FormState {
@@ -58,28 +58,50 @@ export default function JobFormPage() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [loading, setLoading] = useState(isEditMode)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
-  useEffect(() => {
+  function loadJob(onCancelled?: () => boolean) {
     if (jobId === null) return
-    let cancelled = false
-
     setLoading(true)
+    setLoadError(null)
     fetchJob(jobId)
       .then((job) => {
-        if (cancelled) return
+        if (onCancelled?.()) return
         setForm(toFormState(job))
         setLoading(false)
       })
       .catch((err: unknown) => {
-        if (cancelled) return
+        if (onCancelled?.()) return
         setLoadError(err instanceof Error ? err.message : String(err))
         setLoading(false)
       })
+  }
 
+  useEffect(() => {
+    let cancelled = false
+    loadJob(() => cancelled)
     return () => {
       cancelled = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId])
+
+  async function handleDelete() {
+    if (jobId === null) return
+
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      await deleteJob(jobId)
+      navigate('/')
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : String(err))
+      setDeleting(false)
+      setConfirmingDelete(false)
+    }
+  }
 
   function handleChange<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -135,6 +157,9 @@ export default function JobFormPage() {
         <div className="icon">⚠️</div>
         <h3>求人データの取得に失敗しました</h3>
         <p role="alert">{loadError}</p>
+        <button type="button" className="btn-secondary" onClick={() => loadJob()}>
+          再読み込み
+        </button>
       </div>
     )
   }
@@ -256,6 +281,12 @@ export default function JobFormPage() {
         <FieldError messages={errors.memo} />
       </div>
 
+      {deleteError && (
+        <p className="form-error" role="alert">
+          {deleteError}
+        </p>
+      )}
+
       <div className="form-actions">
         <button type="submit" className="btn-primary" disabled={submitting}>
           {submitting ? '保存中...' : isEditMode ? '更新する' : '登録する'}
@@ -263,7 +294,40 @@ export default function JobFormPage() {
         <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
           キャンセル
         </button>
+        {isEditMode && !confirmingDelete && (
+          <button
+            type="button"
+            className="btn-secondary btn-danger"
+            onClick={() => setConfirmingDelete(true)}
+          >
+            削除する
+          </button>
+        )}
       </div>
+
+      {isEditMode && confirmingDelete && (
+        <div className="delete-confirm">
+          <p>本当にこの求人を削除しますか?この操作は取り消せません。</p>
+          <div className="delete-confirm-actions">
+            <button
+              type="button"
+              className="btn-primary btn-danger"
+              disabled={deleting}
+              onClick={handleDelete}
+            >
+              {deleting ? '削除中...' : 'はい、削除する'}
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              disabled={deleting}
+              onClick={() => setConfirmingDelete(false)}
+            >
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
     </form>
   )
 }
