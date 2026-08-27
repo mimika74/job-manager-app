@@ -81,6 +81,10 @@ export default function JobFormPage() {
 
   useEffect(() => {
     let cancelled = false
+    setErrors({})
+    setSubmitError(null)
+    setDeleteError(null)
+    setConfirmingDelete(false)
     loadJob(() => cancelled)
     return () => {
       cancelled = true
