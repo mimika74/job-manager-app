@@ -99,19 +99,21 @@ gcloud run deploy job-manager-api \
   --region=asia-northeast1 \
   --allow-unauthenticated \
   --add-cloudsql-instances=<CONNECTION_NAME> \
-  --set-env-vars="APP_ENV=production,APP_DEBUG=false,APP_LOCALE=ja,APP_FALLBACK_LOCALE=en,DB_CONNECTION=mysql,DB_DATABASE=job_manager,DB_USERNAME=job_manager_app,DB_SOCKET=/cloudsql/<CONNECTION_NAME>,SESSION_DRIVER=database,CACHE_STORE=database,QUEUE_CONNECTION=database" \
+  --set-env-vars="APP_ENV=production,APP_DEBUG=false,APP_LOCALE=ja,APP_FALLBACK_LOCALE=en,DB_CONNECTION=mysql,DB_DATABASE=job_manager,DB_USERNAME=job_manager_app,DB_SOCKET=/cloudsql/<CONNECTION_NAME>,SESSION_DRIVER=database,CACHE_STORE=database,QUEUE_CONNECTION=database,ACCESS_KEY=<好きな合言葉>,ACCESS_KEY_EXPIRES_AT=<例: 2026-09-30 23:59:59>" \
   --set-secrets="APP_KEY=laravel-app-key:latest,DB_PASSWORD=db-password:latest"
 ```
+
+**`ACCESS_KEY`はGoogleアカウントを持たない第三者にアプリを見せる際の簡易的なアクセス制限。** 詳細は[access-key-guide.md](access-key-guide.md)を参照。見せる予定がない/認証を別途用意する場合は`ACCESS_KEY`と`ACCESS_KEY_EXPIRES_AT`を省略してよい(その場合は保護なし=誰でもアクセス可能になる点に注意)。
 
 初回はビルドに数分かかります。完了すると `https://job-manager-api-xxxxx-an.a.run.app` のようなURLが表示されるので控えておく(以降 `<API_URL>`)。
 
 動作確認:
 
 ```bash
-curl <API_URL>/api/jobs
+curl <API_URL>/api/jobs -H "X-Access-Key: <設定したACCESS_KEY>"
 ```
 
-`[]` または既存データのJSONが返ってくればOKです。
+`[]` または既存データのJSONが返ってくればOKです(`ACCESS_KEY`を設定した場合、ヘッダーなしだと401になるのが正しい挙動です)。
 
 ---
 
@@ -213,3 +215,4 @@ firebase deploy --only hosting
 | Cloud Runデプロイ後、APIが500を返す | `gcloud run services logs read job-manager-api --region=asia-northeast1` でログ確認。`APP_KEY`未設定・DB接続情報の誤りが多い |
 | フロントから叩くとCORSエラー | `FRONTEND_URL` がCloud Runの環境変数に正しく設定されているか確認(`https://`込みで完全一致している必要あり) |
 | マイグレーションが失敗する | Cloud SQLインスタンスとCloud Runの`--add-cloudsql-instances`の接続名が一致しているか確認 |
+| ブラウザで開くとアクセスキー入力画面から進めない/APIが401を返す | `ACCESS_KEY`を設定した場合の想定挙動。正しいキーを入力しているか、`ACCESS_KEY_EXPIRES_AT`の期限が切れていないか確認([access-key-guide.md](access-key-guide.md)参照) |
