@@ -9,7 +9,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # ---- 実行イメージ ----
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 WORKDIR /app
 
 RUN apk add --no-cache \
