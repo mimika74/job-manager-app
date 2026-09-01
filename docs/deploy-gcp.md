@@ -105,6 +105,8 @@ gcloud run deploy job-manager-api \
 
 **`ACCESS_KEY`はGoogleアカウントを持たない第三者にアプリを見せる際の簡易的なアクセス制限。** 詳細は[access-key-guide.md](access-key-guide.md)を参照。見せる予定がない/認証を別途用意する場合は`ACCESS_KEY`と`ACCESS_KEY_EXPIRES_AT`を省略してよい(その場合は保護なし=誰でもアクセス可能になる点に注意)。
 
+**注意:** `--set-env-vars`の値は上記のように**外側を1つの`""`で囲むだけ**にすること。`ACCESS_KEY="xxxxxx"`のように個々の値までダブルクォートで囲むと、コマンド全体の引用符の対応が崩れて構文エラーになる(値にスペースを含む`ACCESS_KEY_EXPIRES_AT`も同様に、個別クォートせずそのまま書けばよい)。
+
 初回はビルドに数分かかります。完了すると `https://job-manager-api-xxxxx-an.a.run.app` のようなURLが表示されるので控えておく(以降 `<API_URL>`)。
 
 動作確認:
@@ -121,6 +123,12 @@ curl <API_URL>/api/jobs -H "X-Access-Key: <設定したACCESS_KEY>"
 
 Firebase HostingはGCPプロジェクトにそのまま紐付けられます(裏側は同じGoogle Cloudプロジェクト)。
 
+**Firebaseプロジェクトの作成は、CLI(`firebase init hosting`)より先に、ブラウザでFirebase Consoleから行う方が簡単です。**
+
+1. https://console.firebase.google.com/ にアクセスし、Googleアカウントでログイン
+2. 「プロジェクトを作成」→ プロジェクト名を入力する画面で、**「既存のGoogle Cloudプロジェクトに Firebase を追加」を選択し、Phase 0で作った`<PROJECT_ID>`を選ぶ**(新規にFirebase専用のプロジェクトを作ってしまうと、Cloud Runと別プロジェクトになってしまうので注意)
+3. Google Analyticsの設定は今回は不要なのでオフでよい
+
 ```bash
 npm install -g firebase-tools   # 初回のみ
 firebase login
@@ -133,7 +141,7 @@ cd frontend
 firebase init hosting
 ```
 
-- 「Use an existing project」→ Phase 0で作ったプロジェクトを選択
+- 「Use an existing project」→ 手順2で連携したプロジェクトを選択
 - public directory は `dist` (このリポジトリの `firebase.json` に設定済みなので、初期化時に上書き確認が出たら **既存のfirebase.jsonを保持** を選ぶ)
 - 「Configure as a single-page app」= **Yes**
 
@@ -147,8 +155,10 @@ VITE_API_BASE_URL=<API_URL>/api
 
 ```bash
 npm run build
-firebase deploy --only hosting
+firebase deploy --only hosting --project <PROJECT_ID>
 ```
+
+**`--project <PROJECT_ID>` は省略できないことがあります**(`firebase init`で選択したはずでも、実行時にどのプロジェクト向けか明示的に指定しないと失敗するケースがあった)。`<PROJECT_ID>`はPhase 0で控えたものと同じ値です。
 
 `https://<project-id>.web.app` のようなURLが表示されます(以降 `<FRONTEND_URL>`)。
 
@@ -184,7 +194,7 @@ gcloud run deploy job-manager-api --source . --region=asia-northeast1
 # フロントエンド
 cd frontend
 npm run build
-firebase deploy --only hosting
+firebase deploy --only hosting --project <PROJECT_ID>
 ```
 
 ---
@@ -209,6 +219,8 @@ firebase deploy --only hosting
 ---
 
 ## トラブルシューティング
+
+実際のデプロイで発生した問題の詳細な原因・対処法は [deploy-troubleshooting.md](deploy-troubleshooting.md) にまとめている。ここでは簡易的な早見表のみ。
 
 | 症状 | 確認ポイント |
 | --- | --- |
