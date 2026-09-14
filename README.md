@@ -3,6 +3,10 @@
 転職活動中の応募求人を一元管理するための個人用Webアプリです。
 求人の登録・一覧表示・選考ステータス管理・メモ機能を提供します。
 
+**公開URL:** https://job-manager-app-507111.web.app/
+
+本プロジェクトは [Claude Code](https://claude.com/claude-code) を使用して開発しています。
+
 ## 技術スタック
 
 - バックエンド: Laravel (PHP)
