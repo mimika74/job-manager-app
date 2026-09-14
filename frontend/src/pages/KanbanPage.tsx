@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchJobs } from '../api/jobs'
-import type { Job } from '../types/job'
-import StatusBadge from '../components/StatusBadge'
+import { JOB_STATUSES, type Job } from '../types/job'
 import { getStatusTone } from '../lib/statusTone'
 import { formatSalary } from '../lib/formatSalary'
 
 type LoadState = 'loading' | 'success' | 'error'
 
-export default function JobListPage() {
+export default function KanbanPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [state, setState] = useState<LoadState>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -55,46 +54,39 @@ export default function JobListPage() {
       <div className="card empty-state">
         <div className="icon">🗂️</div>
         <h3>登録済みの求人はありません</h3>
-        <p>新規登録すると、ここに一覧表示されます。</p>
+        <p>新規登録すると、ここにカンバン表示されます。</p>
       </div>
     )
   } else {
     content = (
-      <div className="table-wrap">
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>会社名</th>
-                <th>職種</th>
-                <th>ステータス</th>
-                <th>応募日</th>
-                <th>勤務地</th>
-                <th>給与</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.id} className={`job-row tone-${getStatusTone(job.status)}`}>
-                  <td>{job.company_name}</td>
-                  <td>{job.position}</td>
-                  <td>
-                    <StatusBadge status={job.status} />
-                  </td>
-                  <td className="mono">{job.application_date ?? '-'}</td>
-                  <td>{job.location ?? '-'}</td>
-                  <td className="mono">{formatSalary(job)}</td>
-                  <td>
-                    <Link to={`/jobs/${job.id}/edit`} className="link-edit">
-                      編集
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="kanban-board">
+        {JOB_STATUSES.map((status) => {
+          const jobsInStatus = jobs.filter((job) => job.status === status)
+          return (
+            <div key={status} className={`kanban-column tone-${getStatusTone(status)}`}>
+              <div className="kanban-column-header">
+                <span>{status}</span>
+                <span className="kanban-column-count">{jobsInStatus.length}</span>
+              </div>
+              <div className="kanban-column-body">
+                {jobsInStatus.length === 0 ? (
+                  <p className="kanban-column-empty">なし</p>
+                ) : (
+                  jobsInStatus.map((job) => (
+                    <div key={job.id} className="kanban-card">
+                      <p className="kanban-card-company">{job.company_name}</p>
+                      <p className="kanban-card-position">{job.position}</p>
+                      <div className="kanban-card-meta">
+                        <span>{job.application_date ?? '応募日未定'}</span>
+                        <span className="mono">{formatSalary(job)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -102,10 +94,10 @@ export default function JobListPage() {
   return (
     <>
       <div className="list-toolbar">
-        <h2>求人一覧</h2>
+        <h2>求人カンバン</h2>
         <div className="list-toolbar-actions">
-          <Link to="/kanban" className="btn-secondary">
-            カンバン表示
+          <Link to="/" className="btn-secondary">
+            一覧表示
           </Link>
           <Link to="/jobs/new" className="btn-primary">
             + 新規登録
