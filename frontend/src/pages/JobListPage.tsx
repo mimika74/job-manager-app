@@ -2,9 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchJobs } from '../api/jobs'
 import type { Job } from '../types/job'
-import StatusBadge from '../components/StatusBadge'
-import { getStatusTone } from '../lib/statusTone'
-import { formatSalary } from '../lib/formatSalary'
+import JobTableView from '../components/JobTableView'
+import JobKanbanView from '../components/JobKanbanView'
 
 type LoadState = 'loading' | 'success' | 'error'
 
@@ -12,6 +11,7 @@ export default function JobListPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [state, setState] = useState<LoadState>('loading')
   const [error, setError] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
 
   const load = useCallback(() => {
     setState('loading')
@@ -59,43 +59,14 @@ export default function JobListPage() {
       </div>
     )
   } else {
-    content = (
+    content = viewMode === 'list' ? (
       <div className="table-wrap">
         <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>会社名</th>
-                <th>職種</th>
-                <th>ステータス</th>
-                <th>応募日</th>
-                <th>勤務地</th>
-                <th>給与</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.id} className={`job-row tone-${getStatusTone(job.status)}`}>
-                  <td>{job.company_name}</td>
-                  <td>{job.position}</td>
-                  <td>
-                    <StatusBadge status={job.status} />
-                  </td>
-                  <td className="mono">{job.application_date ?? '-'}</td>
-                  <td>{job.location ?? '-'}</td>
-                  <td className="mono">{formatSalary(job)}</td>
-                  <td>
-                    <Link to={`/jobs/${job.id}/edit`} className="link-edit">
-                      編集
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <JobTableView jobs={jobs} />
         </div>
       </div>
+    ) : (
+      <JobKanbanView jobs={jobs}/>
     )
   }
 
@@ -104,9 +75,20 @@ export default function JobListPage() {
       <div className="list-toolbar">
         <h2>求人一覧</h2>
         <div className="list-toolbar-actions">
-          <Link to="/kanban" className="btn-secondary">
-            カンバン表示
-          </Link>
+          <button 
+            type="button"
+            className={viewMode === 'list' ? "btn-primary" : "btn-secondary"}
+            onClick={() => setViewMode('list')}
+          >
+            一覧
+          </button>
+          <button 
+            type="button"
+            className={viewMode === 'kanban' ? "btn-primary" : "btn-secondary"}
+            onClick={() => setViewMode('kanban')}
+          >
+            カンバン
+          </button>
           <Link to="/jobs/new" className="btn-primary">
             + 新規登録
           </Link>

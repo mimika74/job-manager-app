@@ -1,7 +1,6 @@
 import { Link, Route, Routes } from 'react-router-dom'
 import JobListPage from './pages/JobListPage'
 import JobFormPage from './pages/JobFormPage'
-import KanbanPage from './pages/KanbanPage'
 import './App.css'
 
 function App() {
@@ -20,7 +19,6 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<JobListPage />} />
-          <Route path="/kanban" element={<KanbanPage />} />
           <Route path="/jobs/new" element={<JobFormPage />} />
           <Route path="/jobs/:id/edit" element={<JobFormPage />} />
         </Routes>
