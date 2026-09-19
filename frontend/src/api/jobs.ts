@@ -1,4 +1,4 @@
-import type { CreateJobInput, Job } from '../types/job'
+import type { CreateJobInput, Job, JobStatus } from '../types/job'
 import { clearStoredAccessKey, getStoredAccessKey } from '../lib/accessKey'
 
 const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
@@ -106,6 +106,17 @@ export function updateJob(id: number, input: CreateJobInput): Promise<Job> {
       Accept: 'application/json',
     },
     body: JSON.stringify(input),
+  })
+}
+
+export function updateJobStatus(id: number, status: JobStatus): Promise<Job> {
+  return apiRequest<Job>(`/jobs/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ status }),
   })
 }
 

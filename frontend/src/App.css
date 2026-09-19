@@ -518,6 +518,14 @@ tr.job-row.tone-neutral td:first-child {
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
+  border-radius: 8px;
+  transition: background-color 0.12s ease;
+}
+
+.kanban-column-body.drag-over {
+  background: var(--gold-bg);
+  outline: 2px dashed var(--gold);
+  outline-offset: -2px;
 }
 
 .kanban-column-empty {
@@ -532,6 +540,11 @@ tr.job-row.tone-neutral td:first-child {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px 12px;
+  cursor: grab;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
 }
 
 .kanban-card-company {
