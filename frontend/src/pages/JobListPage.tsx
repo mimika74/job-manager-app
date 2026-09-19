@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchJobs } from '../api/jobs'
-import type { Job } from '../types/job'
+import { fetchJobs, updateJobStatus } from '../api/jobs'
+import type { Job, JobStatus } from '../types/job'
 import JobTableView from '../components/JobTableView'
 import JobKanbanView from '../components/JobKanbanView'
 
@@ -27,6 +27,22 @@ export default function JobListPage() {
         setState('error')
       })
   }, [])
+
+
+  const handleStatusChange = (jobId: number, newStatus: JobStatus) => {
+    const previousJobs = jobs // ① 今の jobs を退避しておく
+
+    setJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.id === jobId ? { ...job, status: newStatus } : job
+      )
+    ) // ② 画面を先に更新(楽観的更新)
+
+    updateJobStatus(jobId, newStatus).catch((err: unknown) => {
+      setJobs(previousJobs) // ③ 失敗したら退避しておいたjobsに戻す
+      setError(err instanceof Error ? err.message : String(err))
+    })
+  }
 
   useEffect(() => {
     load()
@@ -66,7 +82,7 @@ export default function JobListPage() {
         </div>
       </div>
     ) : (
-      <JobKanbanView jobs={jobs}/>
+      <JobKanbanView jobs={jobs} onStatusChange={handleStatusChange} />
     )
   }
 
@@ -94,6 +110,9 @@ export default function JobListPage() {
           </Link>
         </div>
       </div>
+      {state === 'success' && error && (
+        <div className="form-error">{error}</div>
+      )}
       {content}
     </>
   )

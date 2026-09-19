@@ -164,6 +164,30 @@ class JobApiTest extends TestCase
         $response->assertJsonValidationErrors(['salary_max']);
     }
 
+    public function test_update_status_only_does_not_change_other_fields(): void
+    {
+        // ① 会社名・ステータスを指定して求人を1件作る(createJob()のoverridesを使う)
+        $job = $this->createJob([
+            'company_name' => '変化しないはずの会社',
+            'status' => '未応募',
+        ]);
+
+        // ② statusだけをPUTする(company_nameは送らない)
+        $response = $this->putJson("/api/jobs/{$job->id}", [
+            'status' => '内定' // 何か別のステータスに変える
+        ]);
+
+        // ③-a レスポンスが200で、statusが変わっていることを確認
+        $response->assertOk();
+        $response->assertJsonFragment(['status' => '内定']);
+
+        // ③-b DB上で company_name が元のまま残っていることを確認
+        $this->assertDatabaseHas('job_postings', [
+            'id' => $job->id,
+            'company_name' => '変化しないはずの会社',
+        ]);
+    }
+
     public function test_update_returns_404_for_missing_job(): void
     {
         $response = $this->putJson('/api/jobs/999999', ['status' => '内定']);
