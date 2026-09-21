@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { JOB_STATUSES, type Job, type JobStatus } from '../types/job'
 import { getStatusTone } from '../lib/statusTone'
 import { formatSalary } from '../lib/formatSalary'
+import { useNavigate } from 'react-router-dom'
 
 export default function JobKanbanView({
   jobs,
@@ -10,6 +11,7 @@ export default function JobKanbanView({
     jobs: Job[]
     onStatusChange: (jobId: number, newStatus: JobStatus) => void
   } ) {
+    const navigate = useNavigate() // ① useNavigateフックを呼び出す
     const [dragOverStatus, setDragOverStatus] = useState<JobStatus | null>(null)
 
     return (
@@ -42,6 +44,7 @@ export default function JobKanbanView({
                       className="kanban-card"
                       draggable
                       onDragStart={(event) => event.dataTransfer.setData('text/plain', String(job.id))}
+                      onClick={() => navigate(`/jobs/${job.id}/edit`)}
                       >
                       <p className="kanban-card-company">{job.company_name}</p>
                       <p className="kanban-card-position">{job.position}</p>
