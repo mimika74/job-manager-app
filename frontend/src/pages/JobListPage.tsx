@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { fetchJobs, updateJobStatus } from '../api/jobs'
 import type { Job, JobStatus } from '../types/job'
 import JobTableView from '../components/JobTableView'
 import JobKanbanView from '../components/JobKanbanView'
+import Modal from '../components/Modal'
+import JobForm from '../components/JobForm'
 
 type LoadState = 'loading' | 'success' | 'error'
 
@@ -12,6 +13,7 @@ export default function JobListPage() {
   const [state, setState] = useState<LoadState>('loading')
   const [error, setError] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
+  const [isCreating, setIsCreating] = useState<boolean | null>(false) 
 
   const load = useCallback(() => {
     setState('loading')
@@ -105,11 +107,23 @@ export default function JobListPage() {
           >
             カンバン
           </button>
-          <Link to="/jobs/new" className="btn-primary">
+          <button className="btn-primary" onClick={() => setIsCreating(true)}>
             + 新規登録
-          </Link>
+          </button>
         </div>
       </div>
+      {isCreating && (
+        <Modal onClose={() => setIsCreating(false)}>
+          <JobForm
+            jobId={null} // ② 新規登録モードであることを示す値
+            onClose={() => setIsCreating(false)}
+            onSuccess={() => {
+              setIsCreating(false)
+              load() // ③ 一覧を再取得
+            }}
+          />
+        </Modal>
+      )}
       {state === 'success' && error && (
         <div className="form-error">{error}</div>
       )}
