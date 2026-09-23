@@ -82,7 +82,7 @@ export default function JobListPage() {
         </div>
       </div>
     ) : (
-      <JobKanbanView jobs={jobs} onStatusChange={handleStatusChange} />
+      <JobKanbanView jobs={jobs} onStatusChange={handleStatusChange} onJobsChanged={() => load()} />
     )
   }
 
